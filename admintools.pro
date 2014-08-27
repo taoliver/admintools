@@ -3,7 +3,8 @@ TEMPLATE = app
 QT += qml quick widgets
 
 SOURCES += main.cpp \
-    adminscript.cpp
+    adminscript.cpp \
+    adminthread.cpp
 
 RESOURCES += qml.qrc
 
@@ -18,4 +19,5 @@ OTHER_FILES += \
     README.md
 
 HEADERS += \
-    adminscript.h
+    adminscript.h \
+    adminthread.h

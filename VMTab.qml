@@ -1,90 +1,96 @@
 import QtQuick 2.2
-import QtQuick.Controls 1.1
+import QtQuick.Controls 1.2
+import QtQuick.Controls.Styles 1.2
 import QtQuick.Layouts 1.0
+
+// import my script command C++ class library
 import Scripts 1.0
 
-Rectangle {
-    width: 100
-    height: 62
+ColumnLayout {
+    id: mainLayout
+    //anchors.centerIn: parent
+    //Layout.fillWidth: true
+    anchors.fill: parent
+    anchors.margins: 5 // edge around the outer margin of Layout object
+    //spacing: 5 // spacing between objects within Layout
 
+    // create an instance of my C++ Scripts class AdminScript
+    // must be inside Layout because in a TabView?
     AdminScript {
-                id: vmCommand
-                command: "A command"
-                output: "the output"
-                status: 0
-                }
+        id: vmCommand
+        command: ""
+        output: ""
+        status: 0
+    }
 
-    Column {
-        anchors.centerIn: parent
-        spacing: 20
+    RowLayout {
+        //anchors.fill: parent
+        //anchors.centerIn: parent
+        //spacing: 20
+        Layout.fillWidth: true
+//        Layout.fillHeight: true
 
-        Row {
-            //anchors.centerIn: parent
-            spacing: 20
-
-            Text {
-                text: "Command:"
-            }
-            TextField {
-                id: vmInputTxt
-                width: 100
-                placeholderText: "Type command here"
-                onAccepted: {
-                    //vmOutput.text = text;
-                    vmCommand.command = text;
-                    vmCommand.runCommand();
-                }
-            }
-            Button{
-                id: vmRunButton
-                text: "Run"
-                onPressedChanged: {
-                    vmCommand.command = vmInputTxt.getText(0,vmInputTxt.length);
-                    vmCommand.runCommand();
-                }
+        Text {
+            text: "Command:"
+        }
+        TextField {
+            id: vmInputTxt
+            Layout.fillWidth: true
+            //width: 100
+            placeholderText: "Type command here"
+            onAccepted: {
+                vmCommand.command = text;
+                vmCommand.runCommand();
             }
         }
-
-        Row {
-            //anchors.centerIn: parent
-            spacing: 20
-
-            Text {
-                text: "Status:"
-            }
-            Text {
-                id: vmProgressTxt
-                text: vmCommand.status
-            }
-            ProgressBar {
-                id: vmProgressBar
-                minimumValue: 0
-                maximumValue: 100
-                orientation: Qt.Horizontal
-                value: vmCommand.status
+        Button{
+            id: vmRunButton
+            text: "Run"
+            onClicked: {
+                vmCommand.command = vmInputTxt.getText(0,vmInputTxt.length);
+                vmCommand.runCommand();
             }
         }
+    }
 
-        Row {
-            //anchors.centerIn: parent
-            spacing: 20
+    RowLayout {
+        //anchors.fill: parent
+        //anchors.centerIn: parent
+        //spacing: 20
 
-            Text {
-                text: "Output:"
-            }
+        Text {
+            text: "Status:"
+        }
+        Text {
+            id: vmProgressTxt
+            text: vmCommand.status
+        }
+        ProgressBar {
+            id: vmProgressBar
+            minimumValue: 0
+            maximumValue: 100
+            orientation: Qt.Horizontal
+            value: vmCommand.status
+        }
+    }
+
+    GroupBox {
+        title: qsTr("Output")
+        Layout.fillWidth: true
+        Layout.fillHeight: true
+
+        RowLayout {
+            anchors.fill: parent
+
             TextArea {
                 id: vmOutputTxt
                 text: vmCommand.output
                 readOnly: true
-                width: 100
-                height: 62
+                Layout.minimumHeight: 30
+                Layout.fillHeight: true
+                Layout.fillWidth: true
             }
         }
-
     }
-
-    Text {
-           anchors { bottom: parent.bottom; horizontalCenter: parent.horizontalCenter; bottomMargin: 20 }
-           text: "Use Help if you're in trouble"
-       }
 }
+
