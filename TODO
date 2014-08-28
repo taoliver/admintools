@@ -1,0 +1,8 @@
+Things still to do
+==================
+
+catch qt.quit etc and use dialog to say no if long job running
+animation
+styles
+
+re-create app in PyQt for comparison
