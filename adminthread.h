@@ -4,6 +4,7 @@
 #include <QThread>
 #include <QMutex>
 #include <QWaitCondition>
+#include <QProcess>
 
 class AdminThread : public QThread
 {
@@ -13,6 +14,7 @@ public:
     ~AdminThread();
 
     int runScript(const QString &command);
+    int stopScript();
 
 signals:
     void signalOutput(const QString &output);
@@ -26,16 +28,17 @@ protected:
 
 private:
     int executeScript(const QString &command);
-    int executeScript2(const QString &command);
 
     QMutex mutex;
     QWaitCondition condition;
     bool restart;
+    bool stop;
     bool abort;
 
     QString command;
     QString output;
     int status;
+    QProcess process;
 
 };
 

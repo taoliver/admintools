@@ -16,7 +16,8 @@ include(deployment.pri)
 
 OTHER_FILES += \
     .gitignore \
-    README.md
+    TODO \
+    README
 
 HEADERS += \
     adminscript.h \

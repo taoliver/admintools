@@ -4,5 +4,7 @@
         <file>SyncTab.qml</file>
         <file>BackupTab.qml</file>
         <file>VMTab.qml</file>
+        <file>Scratch.qml</file>
+        <file>FixedFont.qml</file>
     </qresource>
 </RCC>

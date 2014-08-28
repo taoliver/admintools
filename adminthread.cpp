@@ -4,7 +4,10 @@ AdminThread::AdminThread(QObject *parent) :
     QThread(parent)
 {
     restart = false;
+    stop = false;
     abort = false;
+
+    QProcess process;
 }
 
 AdminThread::~AdminThread()
@@ -15,6 +18,18 @@ AdminThread::~AdminThread()
     mutex.unlock();
 
     wait();
+}
+
+// called from AdminScript class object to stop command
+int AdminThread::stopScript()
+{
+
+    mutex.lock();
+    stop = true;
+    condition.wakeOne();
+    mutex.unlock();
+
+    return 0;
 }
 
 // called from AdminScript class object to run command
@@ -54,10 +69,12 @@ void AdminThread::run()
         if (!restart)
             condition.wait(&mutex);
         restart = false;
+        stop = false;
         mutex.unlock();
     }
 }
 
+// actually execute the command here
 int AdminThread::executeScript(const QString &command)
 {
     int i;
@@ -65,43 +82,49 @@ int AdminThread::executeScript(const QString &command)
     QString str;
     emit signalOutput(command);
     emit signalOutput("\n");
-    for (i=0;i<10;i++)
-    {
-        str = str.setNum(i);
-        output = str;
-        emit signalOutput(output);
-        emit signalStatus(i);
-        sleep(1);
+
+    QProcess process;
+    //process.start("ls -l /home/oliver");
+    //process.start("/home/oliver/projects/vm/vmbackup zentyal");
+    //process.start("top");
+    process.start("/home/oliver/projects/vm/test");
+
+    // now read the output line by line
+    // and send to calling thread
+    char buf[1024];
+    qint64 lineLength;
+    QString stdout;
+
+    if (!process.waitForStarted())
+        return false;
+
+    while (!stop && !abort) {
+        if (!process.waitForReadyRead())
+           return false;
+        stdout = process.readAllStandardOutput();
+        //lineLength = process.readLine(buf, sizeof(buf));
+        //if (lineLength == -1) {
+            // end of stream
+        //    break;
+        //}
+        emit signalOutput(stdout);
+        //emit signalOutput("zzz\n");
     }
-    emit signalOutput("\n");
+
+    // terminate process, if it hasn't stopped already
+    process.close();
+
+    //if (!process.waitForFinished())
+    //    return false;
+
+    //process.waitForFinished(-1); // will wait forever until finished
+    //QString stdout = process.readAllStandardOutput();
+    //QString stderr = process.readAllStandardError();
+
+    //emit signalStatus(i);
+    emit signalOutput(stdout);
     // successful execution - return 0
     emit signalResult(0);
     return 0;
 }
 
-int AdminThread::executeScript2(const QString &command)
-{
-    int i;
-    int &ref = i;
-    QString str;
-    //if (!restart) {
-        emit signalOutput(command);
-        emit signalOutput("\n");
-    //}
-    for (i=0;i<10;i++)
-    {
-        str = str.setNum(i);
-        output = str;
-        //if (!restart) {
-            emit signalOutput(output);
-            emit signalStatus(i);
-        //}
-        sleep(1);
-    }
-    //if (!restart) {
-        emit signalOutput("\n");
-        // successful execution - return 0
-        emit signalResult(0);
-    //}
-    return 0;
-}

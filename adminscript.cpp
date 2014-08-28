@@ -24,7 +24,6 @@ QString AdminScript::command() const
 
 void AdminScript::setCommand(const QString &command)
 {
-    //int res;
     m_command = command;
     emit commandChanged();
 }
@@ -37,6 +36,17 @@ void AdminScript::runCommand()
     //this->runAdminScript(m_command);
     // run script in thread
     thread.runScript(m_command);
+    // set start time for command
+    QDateTime now = QDateTime::currentDateTime();
+    setStartTime(now.toString());
+}
+
+// the only entry point to stop the current command and kill its thread
+// called from QML
+void AdminScript::stopCommand()
+{
+    // run script in thread
+    thread.stopScript();
 }
 
 QString AdminScript::output() const
@@ -46,14 +56,19 @@ QString AdminScript::output() const
 
 void AdminScript::setOutput(const QString &output)
 {
-    m_output = m_output + output;
+    m_output = output;
     emit outputChanged();
 }
 
 // slot function called by thread signalOutput
 void AdminScript::updateOutput(const QString &output)
 {
-    setOutput(output);
+    m_output = m_output + output;
+    emit outputChanged();
+    // update elapsed time
+    QDateTime now = QDateTime::currentDateTime();
+    qint64 elapsed = m_startTime.msecsTo(now);
+    setElapsedTime(QString::number(elapsed));
 }
 
 int AdminScript::status() const
@@ -73,24 +88,42 @@ void AdminScript::updateStatus(const int &status)
     setStatus(status);
 }
 
+QString AdminScript::startTime() const
+{
+    return m_sstartTime;
+}
+
+void AdminScript::setStartTime(const QString &time)
+{
+    m_sstartTime = time;
+    m_startTime = QDateTime::fromString(time);
+    emit startTimeChanged();
+}
+
+QString AdminScript::elapsedTime() const
+{
+    return m_selapsedTime;
+}
+
+void AdminScript::setElapsedTime(const QString &time)
+{
+    qint64 t = time.toLongLong();
+    m_elapsedTime = t;
+    int ms = t%1000;
+    t = (t/1000);
+    int s = t%60;
+    t = (t/60);
+    int m = t%60;
+    t = (t/60);
+    int h = t/60;
+    t = (t/60);
+    QTime elapsed = QTime(h, m, s, ms);
+    m_selapsedTime = elapsed.toString();
+    emit elapsedTimeChanged();
+}
+
 // slot function called by thread signalResult
 void AdminScript::updateResult(const int &result)
 {
     //
-}
-
-int AdminScript::runAdminScript(const QString &command)
-{
-    int i;
-    int &ref = i;
-    QString str;
-    for (i=0;i<5;i++)
-    {
-        str = str.setNum(i);
-        this->setStatus(ref);
-        this->setOutput(str);
-        QApplication::processEvents(QEventLoop::AllEvents);
-        sleep(1);
-    }
-    return 0;
 }
