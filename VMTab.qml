@@ -13,10 +13,8 @@ ColumnLayout {
     anchors.fill: parent
     anchors.margins: 5 // edge around the outer margin of Layout object
     //spacing: 5 // spacing between objects within Layout
-
-    // fixed font for command input and output
-    //FontLoader { id: fixedFont; name: "Monospace" }
-    FontLoader { id: fixedFont; name: "Liberation Mono" }
+    property string command: ""
+    property string vm: ""
 
     RowLayout {
         //anchors.fill: parent
@@ -28,24 +26,57 @@ ColumnLayout {
         Text {
             text: "Command:"
         }
-        TextField {
-            id: vmInputTxt
+        ComboBox {
+            id: cbCommand
             Layout.fillWidth: true
-            font.family: fixedFont.name;
-            //width: 100
-            placeholderText: "Type command here"
+            currentIndex: 1
+            model: ListModel {
+                id: cbCommandItems
+                ListElement { text: "Start"; str: "sudo virsh start" }
+                ListElement { text: "Shutdown"; str: "sudo virsh shutdown" }
+                ListElement { text: "Save"; str: "sudo virsh save" }
+                ListElement { text: "Restore"; str: "sudo virsh restore" }
+                ListElement { text: "Backup"; str: "sudo /home/oliver/projects/vm/vmbackup" }
+                ListElement { text: "View"; str: "virt-viewer -r -z 75 -c qemu:///system" }
+            }
+            onCurrentIndexChanged: {
+                command = cbCommandItems.get(currentIndex).str;
+            }
             onAccepted: {
-                vmCommand.command = text;
                 vmCommand.runCommand();
                 vmStartButton.enabled = false;
                 vmStopButton.enabled = true;
             }
         }
+
+        ComboBox {
+            id: cbVm
+            Layout.fillWidth: true
+            currentIndex: 1
+            model: ListModel {
+                id: cbVmItems
+                ListElement { text: "Win"; str: "win3" }
+                ListElement { text: "Zentyal"; str: "zentyal" }
+                ListElement { text: "Ubuntu-rpi"; str: "ubuntu-rpi" }
+            }
+            onCurrentIndexChanged: {
+                vm = cbVmItems.get(currentIndex).str;
+            }
+            onAccepted: {
+                vmCommand.runCommand();
+                vmStartButton.enabled = false;
+                vmStopButton.enabled = true;
+            }
+        }
+
         Button{
             id: vmStartButton
             text: "Start"
             onClicked: {
-                vmCommand.command = vmInputTxt.getText(0,vmInputTxt.length);
+                //var command = cbCommand.cbCommandItems.get(currentIndex).str;
+                //var vm = cbVm.cbVmItems.get(currentIndex).str;
+                //vmCommand.command = "echo " + command + " " + vm;
+                vmCommand.command = command + " " + vm;
                 vmCommand.runCommand();
                 vmStartButton.enabled = false;
                 vmStopButton.enabled = true;
@@ -85,6 +116,7 @@ ColumnLayout {
         Button{
             id: vmClearButton
             text: "Clear"
+            tooltip:"This is an interesting tool tip"
             onClicked: {
                 vmCommand.output = "";
             }
@@ -138,8 +170,7 @@ ColumnLayout {
                     var vh = vmOutputTxt.flickableItem.height;
                     var cy = vmOutputTxt.flickableItem.contentY;
                     if ((ch > vh) &&
-                            (oldContentY == oldContentHeight-vh) &&
-                            (cy == ch-vh)) {
+                        (oldContentY == cy)) {
                         var cy = ch-vh;
                         vmOutputTxt.flickableItem.contentY = cy;
                     }

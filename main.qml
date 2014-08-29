@@ -78,6 +78,9 @@ ApplicationWindow {
         elapsedTime: ""
     }
 
+    // monospaced font for input and output
+    FontLoader { id: fixedFont; name: "Liberation Mono" }
+
     TabView {
         anchors.fill: parent
         Component.onCompleted: {
@@ -96,6 +99,7 @@ ApplicationWindow {
     MessageDialog {
         id: aboutDialog
         title: qsTr("About")
+        icon: StandardIcon.Information
         text: qsTr("Admin Tools. Useful tools for my systems.\n" +
                    "Line 2\n" +
                    "Line 3")

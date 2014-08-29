@@ -84,15 +84,13 @@ int AdminThread::executeScript(const QString &command)
     emit signalOutput("\n");
 
     QProcess process;
-    //process.start("ls -l /home/oliver");
-    //process.start("/home/oliver/projects/vm/vmbackup zentyal");
-    //process.start("top");
-    process.start("/home/oliver/projects/vm/test");
+    //process.start("/home/oliver/projects/vm/test");
+    process.start(command);
 
     // now read the output line by line
     // and send to calling thread
-    char buf[1024];
-    qint64 lineLength;
+    //char buf[1024];
+    //qint64 lineLength;
     QString stdout;
 
     if (!process.waitForStarted())

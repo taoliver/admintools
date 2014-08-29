@@ -6,8 +6,31 @@ animation
 styles
 view/browse old log files
   separate tab or on subject tab?
+  display file listings in tree structure
+    can close/open branches to make navigation much easier
+
 info tab
   disk space
 misc commands tab
 
-re-create app in PyQt for comparison
+application icon
+
+~/data/projects/qr
+  not ~/projectsqt
+    avoid duplicates and warnings
+    soft link issues
+
+check process return value on exit
+  for vm start/stop etc
+  viewer disconnect
+  change button enable/disable
+
+.wait after stopping process?
+
+doxygen
+  not supported directly yet in QtCreator?
+
+qsTr everywhere
+have a look at Qt translation software
+
+re-create app in C++ and also in Python for comparison

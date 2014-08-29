@@ -6,5 +6,6 @@
         <file>VMTab.qml</file>
         <file>Scratch.qml</file>
         <file>FixedFont.qml</file>
+        <file>admintools.png</file>
     </qresource>
 </RCC>

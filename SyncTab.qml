@@ -9,62 +9,46 @@ import Scripts 1.0
 ColumnLayout {
     id: mainLayout
     //anchors.centerIn: parent
+    //Layout.fillWidth: true
     anchors.fill: parent
-    //spacing: 20
+    anchors.margins: 5 // edge around the outer margin of Layout object
+    //spacing: 5 // spacing between objects within Layout
 
-    // create an instance of my C++ Scripts class AdminScript
-    AdminScript {
-                id: vmCommand
-                command: ""
-                output: ""
-                status: 0
-                }
+    // fixed font for command input and output
+    //FontLoader { id: fixedFont; name: "Monospace" }
+    //FontLoader { id: fixedFont; name: "Liberation Mono" }
 
-    RowLayout {
-                   id: rowLayout
-                   //anchors.fill: parent
-                   TextField {
-                       placeholderText: "This wants to grow horizontally"
-                       Layout.fillWidth: true
-                   }
-                   Button {
-                       text: "Button"
-                   }
-               }
-    RowLayout {
-                   id: rowLayout2
-                   anchors.fill: parent
-                   TextField {
-                       placeholderText: "This wants to grow horizontally"
-                       Layout.fillWidth: true
-                   }
-                   Button {
-                       text: "Button"
-                   }
-               }
     RowLayout {
         //anchors.fill: parent
         //anchors.centerIn: parent
         //spacing: 20
+        Layout.fillWidth: true
+//        Layout.fillHeight: true
 
         Text {
             text: "Command:"
         }
         TextField {
             id: vmInputTxt
-            width: 100
+            Layout.fillWidth: true
+            font.family: fixedFont.name;
+            //width: 100
             placeholderText: "Type command here"
             onAccepted: {
                 vmCommand.command = text;
                 vmCommand.runCommand();
+                vmStartButton.enabled = false;
+                vmStopButton.enabled = true;
             }
         }
         Button{
-            id: vmRunButton
-            text: "Run"
+            id: vmStartButton
+            text: "Start"
             onClicked: {
                 vmCommand.command = vmInputTxt.getText(0,vmInputTxt.length);
                 vmCommand.runCommand();
+                vmStartButton.enabled = false;
+                vmStopButton.enabled = true;
             }
         }
     }
@@ -88,6 +72,23 @@ ColumnLayout {
             orientation: Qt.Horizontal
             value: vmCommand.status
         }
+        Button{
+            id: vmStopButton
+            text: "Stop"
+            enabled: false
+            onClicked: {
+                vmCommand.stopCommand();
+                vmStopButton.enabled = false;
+                vmStartButton.enabled = true;
+            }
+        }
+        Button{
+            id: vmClearButton
+            text: "Clear"
+            onClicked: {
+                vmCommand.output = "";
+            }
+        }
     }
 
     RowLayout {
@@ -96,35 +97,70 @@ ColumnLayout {
         //spacing: 20
 
         Text {
-            text: "Output:"
+            text: "Start time:"
         }
-        TextArea {
-            id: vmOutputTxt
-            text: vmCommand.output
-            readOnly: true
-            //width: 300
-            //height: 200
-            Layout.minimumHeight: 30
-            Layout.fillHeight: true
-            Layout.fillWidth: true
+        Text {
+            id: vmStartTime
+            Layout.minimumWidth: 200
+            text: vmCommand.startTime
+        }
+        Text {
+            text: "Elapsed time:"
+        }
+        Text {
+            id: vmElapsedTime
+            Layout.minimumWidth: 100
+            text: vmCommand.elapsedTime
         }
     }
+
     GroupBox {
-        title: qsTr("Package selection")
-        Column {
-            //spacing: 2
-            CheckBox {
-                text: qsTr("Update system")
-            }
-            CheckBox {
-                text: qsTr("Update applications")
-            }
-            CheckBox {
-                text: qsTr("Update documentation")
+        title: qsTr("Output")
+        Layout.fillWidth: true
+        Layout.fillHeight: true
+
+        RowLayout {
+            anchors.fill: parent
+
+            TextArea {
+                id: vmOutputTxt
+                text: vmCommand.output
+                font.family: fixedFont.name;
+                readOnly: true
+                Layout.minimumHeight: 30
+                Layout.fillHeight: true
+                Layout.fillWidth: true
+                property int oldContentHeight: 0;
+                property int oldContentY: 0;
+                onTextChanged: {
+                    console.log("Changed");
+                    var ch = vmOutputTxt.flickableItem.contentHeight;
+                    var vh = vmOutputTxt.flickableItem.height;
+                    var cy = vmOutputTxt.flickableItem.contentY;
+                    if ((ch > vh) &&
+                            (oldContentY == oldContentHeight-vh) &&
+                            (cy == ch-vh)) {
+                        var cy = ch-vh;
+                        vmOutputTxt.flickableItem.contentY = cy;
+                    }
+                    else {
+                        //var cy = vmOutputTxt.flickableItem.contentY;
+                        var cy = vmOutputTxt.flickableItem.contentY;
+                        //var cy = oldContentY;
+                        //vmOutputTxt.flickableItem.contentY = cy;
+                    }
+                    console.log(oldContentY,oldContentHeight,cy,ch);
+                    oldContentY = cy;
+                    oldContentHeight = ch;
+                    //console.log("length");
+                    //console.log(vmOutputTxt.flickableItem.contentY);
+                    //console.log(vmOutputTxt.flickableItem.height);
+                    //console.log(vmOutputTxt.flickableItem.contentHeight);
+                    //console.log(oldContentY,oldContentHeight,cy,ch);
+                    //console.log(vmOutputTxt.cursorPosition);
+                    //console.log(vmCommand.output.length);
+                }
             }
         }
     }
-
-
 }
-
