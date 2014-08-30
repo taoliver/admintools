@@ -5,6 +5,8 @@
 #include <iostream>
 #include <QTextStream>
 #include <cstdlib>
+#include <QTranslator>
+#include <QString>
 
 using namespace std;
 
@@ -15,27 +17,42 @@ int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
 
+    // executable file directory
+    QString base = QCoreApplication::applicationDirPath();
+
     // set application icon
-    //app.setWindowIcon(QIcon("/usr/share/icons/hicolor/32x32/apps/vlc.xpm"));
-    //app.setWindowIcon(QIcon("/usr/share/icons/hicolor/32x32/apps/kfind.png"));
-    //app.setWindowIcon(QIcon("/usr/share/icons/hicolor/32x32/apps/cantor.png"));
     app.setWindowIcon(QIcon(":/admintools.png"));
-    //app.setWindowIcon(QIcon("/home/oliver/projects/qt/admintools/admintools/admintools.png"));
 
     // debug logging to QtCreator console or command line if invoked from command line
     qDebug("Hello world!");
 
     // C++ standard stream output
-    std::cout << "Goodbye World!" << endl;
-    std::cout << "Goodbye World!" << endl;
+    //cout << QObject::tr("Goodbye World!") << endl;
+    //cout << app.tr("Goodbye World!") << endl;
     fflush(stdout);
 
     // Qt standard stream output
     QTextStream out(stdout);
-    out << "Qt signing out!" << endl;
+    //out << app.tr("Qt signing out!") << endl;"Qt signing out!" << endl;
+
+    // register AdminScr
 
     // register AdminScript type for use in QML
     qmlRegisterType<AdminScript>("Scripts", 1, 0, "AdminScript");
+
+    // get current locale
+    QString locale = QLocale::system().name();
+
+    // load translation for locale
+    // use relative path while developing
+    // use search path for proper deployment?
+    QTranslator translator;
+    QString trans = base + "/../admintools/admintools_" + locale;
+    out << locale << endl;
+    out << base << endl;
+    out << trans << endl;
+    translator.load(trans);
+    app.installTranslator(&translator);
 
     QQmlApplicationEngine engine;
     engine.load(QUrl(QStringLiteral("qrc:///main.qml")));

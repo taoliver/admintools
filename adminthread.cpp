@@ -1,5 +1,11 @@
 #include "adminthread.h"
 
+#include <iostream>
+#include <QTextStream>
+#include <cstdlib>
+
+using namespace std;
+
 AdminThread::AdminThread(QObject *parent) :
     QThread(parent)
 {
@@ -82,6 +88,19 @@ int AdminThread::executeScript(const QString &command)
     QString str;
     emit signalOutput(command);
     emit signalOutput("\n");
+
+    // debugging output in threads works
+    qDebug("Hello world from thread!");
+
+    // C++ standard stream output
+    cout << "Goodbye World from thread!!" << endl;
+    str = tr("Goodbye World 2!");
+    cout << str.toStdString() << endl;
+    fflush(stdout);
+
+    // Qt standard stream output
+    QTextStream out(stdout);
+    out << tr("Qt signing out from thread!!") << endl;
 
     QProcess process;
     //process.start("/home/oliver/projects/vm/test");

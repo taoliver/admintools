@@ -1,9 +1,19 @@
 Things still to do
 ==================
 
+
+ideas
+=====
+
+subclass AdminScript/AdminThread
+  for each type of script eg VM/backup/test
+
 catch qt.quit etc and use dialog to say no if long job running
+
 animation
+
 styles
+
 view/browse old log files
   separate tab or on subject tab?
   display file listings in tree structure
@@ -13,12 +23,12 @@ info tab
   disk space
 misc commands tab
 
-application icon
+keyboard navigation
 
-~/data/projects/qr
-  not ~/projectsqt
+~/data/projects/qt
+  not ~/projects/qt
     avoid duplicates and warnings
-    soft link issues
+    soft link issues?
 
 check process return value on exit
   for vm start/stop etc
@@ -31,6 +41,15 @@ doxygen
   not supported directly yet in QtCreator?
 
 qsTr everywhere
-have a look at Qt translation software
+  have a look at Qt internationalisation
 
-re-create app in C++ and also in Python for comparison
+re-create app in just C++ and also in Python/QML for comparison
+
+
+bugs
+====
+
+program not stopping on exit sometimes?
+  because thread exits with error?
+
+TextArea scroll not quite right
