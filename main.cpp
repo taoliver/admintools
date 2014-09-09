@@ -13,8 +13,22 @@ using namespace std;
 // definition of admin script class
 #include "adminscript.h"
 
+// definition of script list class
+#include "scriptlist.h"
+
+// definition of script list model class
+#include "scriptlistmodel.h"
+
+// nasty, hacky global data for now....
+QList<int> m_data;
+QList<AdminScript *> m_scripts;
+//QList<AdminScript> m_scripts;
+
 int main(int argc, char *argv[])
 {
+    // nasty, hacky global data for now....
+    //QList<int> m_data;
+
     QApplication app(argc, argv);
 
     // executable file directory
@@ -35,10 +49,14 @@ int main(int argc, char *argv[])
     QTextStream out(stdout);
     //out << app.tr("Qt signing out!") << endl;"Qt signing out!" << endl;
 
-    // register AdminScr
+    // register ScriptList type for QML
+    qmlRegisterType<ScriptList>("Scripts", 1, 0, "ScriptList");
 
     // register AdminScript type for use in QML
     qmlRegisterType<AdminScript>("Scripts", 1, 0, "AdminScript");
+
+    // register AdminScript type for use in QML
+    qmlRegisterType<ScriptListModel>("Scripts", 1, 0, "ScriptListModel");
 
     // get current locale
     QString locale = QLocale::system().name();

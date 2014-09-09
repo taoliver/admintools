@@ -4,7 +4,9 @@ QT += qml quick widgets
 
 SOURCES += main.cpp \
     adminscript.cpp \
-    adminthread.cpp
+    adminthread.cpp \
+    scriptlist.cpp \
+    scriptlistmodel.cpp
 
 RESOURCES += qml.qrc
 
@@ -34,4 +36,6 @@ OTHER_FILES += \
 
 HEADERS += \
     adminscript.h \
-    adminthread.h
+    adminthread.h \
+    scriptlist.h \
+    scriptlistmodel.h

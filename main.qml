@@ -11,7 +11,8 @@ ApplicationWindow {
     title: qsTr("Admin Tools")
 
     statusBar: StatusBar {
-            RowLayout {
+            /*
+        RowLayout {
                 Label { text: qsTr("Command:") }
                 Text {
                     id: statusBarCommand
@@ -25,6 +26,7 @@ ApplicationWindow {
                     text: vmCommand.elapsedTime
                 }
             }
+            */
         }
 
     menuBar: MenuBar {
@@ -69,30 +71,56 @@ ApplicationWindow {
     // Tabview can access objects here
 
     // create an instance of my C++ Scripts class AdminScript
-    AdminScript {
+    // now created dynamically for each in-flight command
+
+    /*
+        AdminScript {
         id: vmCommand
         command: ""
+        detached: false
         output: ""
         status: 0
+        running: false
         startTime: ""
         elapsedTime: ""
     }
+    */
 
     // monospaced font for input and output
     FontLoader { id: fixedFont; name: "Liberation Mono" }
 
-    TabView {
+    // split view to show command+output above status list of running commands
+    SplitView {
+        id: splitLayout
         anchors.fill: parent
-        Component.onCompleted: {
-            addTab(qsTr("VM"), Qt.createComponent("VMTab.qml"))
-            addTab(qsTr("Backup"), Qt.createComponent("BackupTab.qml"))
-            addTab(qsTr("Sync"), Qt.createComponent("SyncTab.qml"))
-            addTab(qsTr("Scratch"), Qt.createComponent("Scratch.qml"))
-            addTab(qsTr("Inline"), tab3)
+        orientation: Qt.Vertical
+
+        // details pane for single command
+        Rectangle {
+            height: 200
+            Layout.minimumHeight: 300
+            Layout.fillHeight: true
+            color: "lightgray"
+            TabView {
+                anchors.fill: parent
+                Component.onCompleted: {
+                    addTab(qsTr("VM"), Qt.createComponent("VMTab.qml"))
+                    addTab(qsTr("Backup"), Qt.createComponent("BackupTab.qml"))
+                    addTab(qsTr("Sync"), Qt.createComponent("SyncTab.qml"))
+                    addTab(qsTr("Scratch"), Qt.createComponent("Scratch.qml"))
+                    addTab(qsTr("Inline"), tab3)
+                }
+                Component {
+                    id: tab3
+                    Rectangle {color: "blue"}
+                }
+            }
         }
-        Component {
-            id: tab3
-            Rectangle {color: "blue"}
+
+        // list of status for each running command
+        Rectangle {
+            height: 200
+            color: "white"
         }
     }
 
@@ -130,7 +158,7 @@ ApplicationWindow {
             console.log("User chose to close...")
             // first close down Script objects
             // to terminate threads and scripts properly
-            vmCommand.stopCommand();
+            //vmCommand.stopCommand();
             // now exit application cleanly
             Qt.quit();
             close()

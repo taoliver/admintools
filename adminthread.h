@@ -13,12 +13,16 @@ public:
     explicit AdminThread(QObject *parent = 0);
     ~AdminThread();
 
-    int runScript(const QString &command);
+    int runScript(const QString &command, bool detached);
     int stopScript();
+
+    // useful constants
+    static const int ADMIN_ERR = 1; // error
 
 signals:
     void signalOutput(const QString &output);
     void signalStatus(const int status);
+    void signalRunning(const bool running);
     void signalResult(const int status);
 
 public slots:
@@ -28,12 +32,15 @@ protected:
 
 private:
     int executeScript(const QString &command);
+    int executeScriptDetached(const QString &command);
 
     QMutex mutex;
     QWaitCondition condition;
     bool restart;
     bool stop;
     bool abort;
+    bool running;
+    bool detached;
 
     QString command;
     QString output;

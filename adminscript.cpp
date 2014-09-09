@@ -13,6 +13,8 @@ AdminScript::AdminScript(QObject *parent) :
             this, SLOT(updateOutput(QString)));
     connect(&thread, SIGNAL(signalStatus(int)),
             this, SLOT(updateStatus(int)));
+    connect(&thread, SIGNAL(signalRunning(bool)),
+            this, SLOT(updateRunning(bool)));
     connect(&thread, SIGNAL(signalResult(int)),
             this, SLOT(updateResult(int)));
 }
@@ -35,7 +37,7 @@ void AdminScript::runCommand()
     // run script in this thread
     //this->runAdminScript(m_command);
     // run script in thread
-    thread.runScript(m_command);
+    thread.runScript(m_command, m_detached);
     // set start time for command
     QDateTime now = QDateTime::currentDateTime();
     setStartTime(now.toString());
@@ -47,6 +49,18 @@ void AdminScript::stopCommand()
 {
     // run script in thread
     thread.stopScript();
+}
+
+// detach process?
+bool AdminScript::detached() const
+{
+    return m_detached;
+}
+
+void AdminScript::setDetached(const bool &detached)
+{
+    m_detached = detached;
+    emit detachedChanged();
 }
 
 QString AdminScript::output() const
@@ -71,6 +85,7 @@ void AdminScript::updateOutput(const QString &output)
     setElapsedTime(QString::number(elapsed));
 }
 
+// progress towards completion or some integral value...
 int AdminScript::status() const
 {
     return m_status;
@@ -86,6 +101,24 @@ void AdminScript::setStatus(const int &status)
 void AdminScript::updateStatus(const int &status)
 {
     setStatus(status);
+}
+
+// process running or not?
+bool AdminScript::running() const
+{
+    return m_running;
+}
+
+void AdminScript::setRunning(const bool &running)
+{
+    m_running = running;
+    emit runningChanged();
+}
+
+// slot function called by thread signalRunning
+void AdminScript::updateRunning(const bool &running)
+{
+    setRunning(running);
 }
 
 QString AdminScript::startTime() const

@@ -8,8 +8,6 @@ ideas
 subclass AdminScript/AdminThread
   for each type of script eg VM/backup/test
 
-catch qt.quit etc and use dialog to say no if long job running
-
 animation
 
 styles
@@ -40,10 +38,20 @@ check process return value on exit
 doxygen
   not supported directly yet in QtCreator?
 
-qsTr everywhere
-  have a look at Qt internationalisation
-
 re-create app in just C++ and also in Python/QML for comparison
+
+allow multiple backups/VM commands in-flight at once?
+  status bar: which does it show - or several?
+    don't use app status bar
+    use split horizontal window layout for main qml and
+    show status of all in-flight commands 1 per line in lower split window
+  command pane:
+    includes command input, buttons and output pane
+    combobox at top to choose running command to display plus NEW command
+  will require multiple adminscript objects in each qml file
+    not one global one
+  output pane: show command as Text then output in TextArea below
+               also Stop button beside command
 
 
 bugs
